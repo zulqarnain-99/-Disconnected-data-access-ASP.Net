@@ -80,6 +80,44 @@ namespace Disconnected_data_access_ASP.Net
 
         protected void gvStudents_RowDeleting(object sender, GridViewDeleteEventArgs e)
         {
+            if (Cache["DATASET"] != null)
+            {
+                DataSet ds = (DataSet)Cache["DATASET"];
+                DataRow dr = ds.Tables["Students"].Rows.Find(e.Keys["ID"]);
+                dr.Delete();
+                Cache.Insert("DATASET", ds, null, DateTime.Now.AddHours(24), System.Web.Caching.Cache.NoSlidingExpiration);
+                GetDataFromCache();
+
+            }
+
+        }
+
+        protected void btnUpdateDB_Click(object sender, EventArgs e)
+        {
+            string CS = ConfigurationManager.ConnectionStrings["DBConnection"].ConnectionString;
+            SqlConnection con = new SqlConnection(CS);
+            string strSelectQuery = "select * from tblStudents";
+            SqlDataAdapter da = new SqlDataAdapter(strSelectQuery, con);
+
+            DataSet ds = (DataSet)Cache["DATASET"];
+
+            string strUpdateCommand = "Update tblStudents set Name = @Name, Gender = @Gender, TotalMarks = @TotalMarks where ID = @ID";
+            SqlCommand updateCommand = new SqlCommand(strUpdateCommand, con);
+
+            updateCommand.Parameters.Add("@Name", SqlDbType.NVarChar, 50, "Name");
+            updateCommand.Parameters.Add("@Gender", SqlDbType.NVarChar, 50, "Gender");
+            updateCommand.Parameters.Add("@TotalMarks", SqlDbType.Int, 50, "TotalMarks");
+            updateCommand.Parameters.Add("@Id", SqlDbType.Int, 50, "Id");
+
+            da.UpdateCommand = updateCommand;
+
+            string strDeleteCommand = "delete from tblStudents where ID = @ID";
+            SqlCommand deleteCommand = new SqlCommand(strDeleteCommand, con);
+            deleteCommand.Parameters.Add("@Id", SqlDbType.Int, 50, "Id");
+            da.DeleteCommand = deleteCommand;
+
+            da.Update(ds, "Students");
+            lblMessage.Text = "Database Table UPdated";
 
         }
     }

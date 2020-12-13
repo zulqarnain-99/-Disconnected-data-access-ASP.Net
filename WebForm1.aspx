@@ -19,7 +19,7 @@
                     <asp:BoundField DataField="TotalMarks" HeaderText="TotalMarks" SortExpression="TotalMarks" />
                 </Columns>
             </asp:GridView>
-             <asp:Button ID="btnUpdateDB" runat="server" Text="Update Database Table" />
+             <asp:Button ID="btnUpdateDB" runat="server" Text="Update Database Table" OnClick="btnUpdateDB_Click" />
             <asp:Label ID="lblMessage" runat="server"></asp:Label>
             
         </div>
