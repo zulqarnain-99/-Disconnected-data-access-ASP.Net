@@ -57,7 +57,19 @@ namespace Disconnected_data_access_ASP.Net
 
         protected void gvStudents_RowUpdating(object sender, GridViewUpdateEventArgs e)
         {
+            if (Cache["DATASET"] != null)
+            {
+               DataSet ds = (DataSet)Cache["DATASET"];
+              DataRow dr = ds.Tables["Students"].Rows.Find(e.Keys["ID"]);
+                dr["Name"] = e.NewValues["Name"];
+                dr["Gender"] = e.NewValues["Gender"];
+                dr["TotalMarks"] = e.NewValues["TotalMarks"];
+                Cache.Insert("DATASET", ds, null, DateTime.Now.AddHours(24), System.Web.Caching.Cache.NoSlidingExpiration);
 
+                gvStudents.EditIndex = -1;
+                GetDataFromCache();
+
+            }
         }
 
         protected void gvStudents_RowCancelingEdit(object sender, GridViewCancelEditEventArgs e)
